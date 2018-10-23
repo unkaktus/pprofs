@@ -10,14 +10,17 @@ package pprofs
 import (
 	"log"
 	"net/http"
+
+	"github.com/nogoegst/pprofs/default-mux-saver"
+
 	_ "net/http/pprof"
 )
 
 func init() {
-	// Save defaultServeMux already used by pprof
+	// Save DefaultServeMux already populated by pprof
 	pprofServeMux := http.DefaultServeMux
-	// Overwrite defaultServeMux with a clean one
-	http.DefaultServeMux = http.NewServeMux()
+	// Restore original DefaultServeMux
+	default_mux_saver.Restore()
 	go func() {
 		err := http.ListenAndServe(":6060", pprofServeMux)
 		if err != nil {
